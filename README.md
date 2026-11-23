@@ -57,6 +57,25 @@ Full numbers are in `results/rmse_table.csv`, and every forecast is in `results/
 4. **There is no clear "ML only helps after 2020" pattern here, unlike the UK microdata paper.** Gains look similar in both periods. That paper uses millions of individual prices; this study uses only aggregate series, so the two results aren't directly comparable.
 5. **Every model misses turning points.** At the 2015 devaluation and the 2022–23 surge, all forecasts react late (left chart). The rolling chart also shows that relative accuracy swings a lot over time, so one overall number hides a lot.
 
+## Combining the forecasts
+
+McWilliams, Stewart and Isengildina Massa (*Food Policy*, 2026) find that their random-forest model and a SARIMA benchmark have complementary strengths for U.S. food price inflation, and that a simple average of the two improves accuracy. `combine.py` checks the same idea here, with AVG = (AR + GB) / 2.
+
+RMSE relative to the random walk:
+
+| Horizon | Period | AR | GB | AVG |
+|---|---|---|---|---|
+| 1 month | 2010–2019 | 0.89 | 0.82 | **0.79** |
+| 1 month | 2020–2025 | 0.88 | 0.79 | **0.76** |
+| 3 months | 2010–2019 | 0.89 | **0.72** | 0.74 |
+| 3 months | 2020–2025 | 0.88 | 0.82 | **0.73** |
+| 6 months | 2010–2019 | 0.78 | 0.75 | **0.73** |
+| 6 months | 2020–2025 | 0.85 | 0.76 | **0.74** |
+| 12 months | 2010–2019 | **0.78** | 0.93 | 0.83 |
+| 12 months | 2020–2025 | 0.84 | **0.77** | 0.78 |
+
+The average is the most accurate in 5 of 8 cases, and within 0.05 of the best in the other three. Its advantage is steadier than either model on its own. I have not yet tested whether the average is significantly better than GB alone.
+
 ## Limitations
 
 - About 15 years of monthly forecasts, of which only 65 months are after 2020: too little to detect small differences.
@@ -75,6 +94,7 @@ Full numbers are in `results/rmse_table.csv`, and every forecast is in `results/
 ```
 python -m pip install pandas numpy scikit-learn matplotlib
 python forecast.py
+python combine.py
 ```
 
 The `data/` folder holds the downloaded series, so the results can be reproduced offline.
